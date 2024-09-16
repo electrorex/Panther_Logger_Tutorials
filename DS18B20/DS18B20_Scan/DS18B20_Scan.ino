@@ -1,9 +1,9 @@
  /* This is a modification of the original DS18x20 example script in the OneWire library to make
- *  it work with the Telelogger. This script will scan for DS18B20 devices on the digital port
+ *  it work with the Panther Logger. This script will scan for DS18B20 devices on the digital port
  *  indicated and read temeprature data from those devices and then print results to the serial
  *  monitor.
  *  
- *  The DS18B20 device should be connected to the Telelogger on screw terminal CN4.
+ *  The DS18B20 device should be connected to the Panther Logger on screw terminal CN4.
  *  With the flat side of the sensor pointing up and sensor held down, the order of pin outs is:
  *  Power, Signal, Gound. This matches the order of the pins needed for the device on the CN4 screw 
  *  terminal, which is 3VS, D6, GND.
