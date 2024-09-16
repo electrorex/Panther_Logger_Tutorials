@@ -1,8 +1,8 @@
 /* This script is a modification of the original example script in the OneWire library written by 
- *  Paul Stoffregen. It has been modified to work with the Telelogger board and shows an example of how
+ *  Paul Stoffregen. It has been modified to work with the Panther Logger board and shows an example of how
  *  to read multiple DS18B20 devices.
  *  
- *  The DS18B20 device(s) should be connected to the Telelogger on screw terminal CN4.
+ *  The DS18B20 device(s) should be connected to the Panther Logger on screw terminal CN4.
  *  With the flat side of the sensor pointing up and sensor held down, the order of pin outs is:
  *  Power, Signal, Gound. This matches the order of the pins needed for the device on the CN4 screw 
  *  terminal, which is 3VS, D6, GND.
