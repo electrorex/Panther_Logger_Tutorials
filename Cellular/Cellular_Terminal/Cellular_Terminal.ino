@@ -1,4 +1,4 @@
-/*This sketch will setup the serial monitor to send AT commands to the Telelogger's
+/*This sketch will setup the serial monitor to send AT commands to the Panther Logger's
  * cellular modem and read the responses
  * Todd R Miller, December 11, 2023
  */

@@ -1,4 +1,4 @@
-/*This script is a template for sending data to an internet data base using the Telelogger board and
+/*This script is a template for sending data to an internet data base using the Panther Logger board and
  * the Airgain Quectel BG96 modem using HTTP Post commands.
  *Todd Miller December 4, 2023
 */
@@ -36,9 +36,9 @@ byte Address[NSENSORS][8] = {
 char url[] = "https://industrial.api.ubidots.com";
 char Host[] = "industrial.api.ubidots.com:443";
 char Token[] = "X-Auth-Token: BBUS-GqdJRJRyZz9yrWLH94R6ePS67uqUVa";                                                                  
-char Destination[] = "/api/v1.6/devices/telelogger2";
+char Destination[] = "/api/v1.6/devices/Panther Logger2";
 char ContentLength[30]; 
-char UserAgent[] = "Telelogger/1.0";    
+char UserAgent[] = "Panther Logger/1.0";    
 char ContentType[] = "application/json"; 
 char DataString[300];      
 char urlCommand[100]; 

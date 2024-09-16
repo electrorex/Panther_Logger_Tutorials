@@ -1,4 +1,4 @@
-/*This script is a template for sending data to an internet data base using the Telelogger board and
+/*This script is a template for sending data to an internet data base using the Panther Logger board and
  * the Airgain Quectel BG96 modem using HTTP Post commands.
  *Todd Miller December 4, 2023
 */
