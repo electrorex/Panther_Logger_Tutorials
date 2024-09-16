@@ -1,11 +1,11 @@
-/*Telelogger_Blink Script. Using the Telelogger (Episode 1): Getting started
- * This script demonstrates how to flash or blink the indicator LEDs on the Telelogger board
+/*Using the Panther Logger (Episode 1): Getting started
+ * This script demonstrates how to flash or blink the indicator LEDs on the Panther board
  * T. Rex Miller, November 18, 2023
  */
 
-//Below, we include this Adafruit library to use the GPIO expander on the Telelogger. 
+//Below, we include this Adafruit library to use the GPIO expander on the Panther Logger. 
 //Pins 8,9 and 10 on the MCP are used to turn LEDs 2, 3 and 4 on and off, respectively.
-//LED1 is conrolled by digital pin 13 on the Telelogger processor
+//LED1 is conrolled by digital pin 13 on the Panther Logger processor
 #include "Adafruit_MCP23X17.h"
 
 //Instatiate an object for the MCP library
@@ -13,7 +13,7 @@ Adafruit_MCP23X17 mcp;
 
 //Below make a function to flash an LED
 //The function takes several arguments
-//LEDpin = the mcp pin of the LED to flash (these are one of 8, 9 or 10 on the Telelogger)
+//LEDpin = the mcp pin of the LED to flash (these are one of 8, 9 or 10 on the Pather Logger)
 //LEDflashes = the number of flashes to occur
 //LEDontime = time in milliseconds to keep LED on during the flash
 //LEDofftime = time in milliseconds to keep LED off during the flash
