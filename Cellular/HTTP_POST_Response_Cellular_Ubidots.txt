@@ -1,0 +1,277 @@
+Setting up
+Waking up modem
+Sending: 
+Received: 
+Modem is awake!
+Resetting modem
+Sending: 
+Received: 
+RDY
+
++CFUN: 1
+
++CPIN: READY
+
++QUSIM: 1
+
++QIND: SMS DONE
+
+APP RDY
+Modem is reset
+Sending: AT
+Received: 
+
+OK
+Sending: AT
+Received: 
+
+OK
+Sending: AT
+Received: 
+
+OK
+Sending: AT+CFUN=1,1
+Received: 
+
+OK
+
+RDY
+
++CFUN: 1
+
++CPIN: READY
+
++QUSIM: 1
+
++QIND: SMS DONE
+
+APP RDY
+Sending: ATZ0
+Received: 
+
+OK
+Sending: ATE0
+Received: 
+
+OK
+Sending: AT+CMEE=0
+Received: 
+
+OK
+Sending: AT+IFC=2,2
+Received: 
+
+OK
+Sending: AT&W
+Received: 
+
+OK
+Sending: AT+QCFG="nwscanseq"
+Received: 
+
++QCFG: "nwscanseq",020301
+
+OK
+Sending: AT+COPS=0
+Received: 
+
+OK
+Sending: AT+CRSM=214,28539,0,0,12,"130062FFFFFFFFFFFFFFFFFF"
+Received: 
+
++CRSM: 144,0,""
+
+OK
+Sending: AT+CTZU=3
+Received: 
+
+OK
+Sending: AT+CTZU?
+Received: 
+
++CTZU: 3
+
+OK
+Sending: AT+QICSGP=1,1,"hologram","","",1
+Received: 
+
+OK
+Sending: AT+CREG?
+Received: 
+
++CREG: 0,3
+
+OK
+Sending: AT+CGREG?
+Received: 
+
++CGREG: 0,4
+
+OK
+Sending: AT+CEREG?
+Received: 
+
++CEREG: 0,5
+
+OK
+CREG = 3
+CGREG = 4
+CEREG = 5
+Sending: AT+CREG=2;+CGREG=2;+CEREG=2
+Received: 
+
+OK
+Sending: AT+CCLK?
+Received: 
+
++CCLK: "23/12/06,09:59:45-24"
+
+OK
+Setup complete
+Starting a data transmission
+Reading sensors
+Posting sensor data
+Sending: AT+CFUN=1,1
+Received: 
+
+OK
+
++CREG: 0
+
++CEREG: 0
+
+Sending: AT+QHTTPCFG="contextid",1
+Received: 
+RDY
+
++CFUN: 1
+
++CPIN: READY
+
++QUSIM: 1
+
++QIND: SMS DONE
+
+OK
+Sending: AT+QHTTPCFG="responseheader",1
+Received: 
+
+APP RDY
+
+OK
+Sending: AT+QHTTPCFG="requestheader",1
+Received: 
+
+OK
+Sending: AT+QHTTPCFG="sslctxid",1
+Received: 
+
+OK
+Sending: AT+QSSLCFG="seclevel",1,0
+Received: 
+
+OK
+Sending: AT+QIACT?
+Received: 
+
+OK
+Sending: AT+QICSGP=1,1,"hologram","","",1
+Received: 
+
+OK
+Sending: AT+QIACT=1
+Received: 
+
+OK
+Sending: AT+QIACT?
+Received: 
+
++QIACT: 1,1,1,"100.71.240.205"
+
+OK
+Sending: AT+CREG?
+Received: 
+
++CREG: 0,3
+
+OK
+Sending: AT+CGREG?
+Received: 
+
++CGREG: 0,4
+
+OK
+Sending: AT+CEREG?
+Received: 
+
++CEREG: 0,5
+
+OK
+CREG = 3
+CGREG = 4
+CEREG = 5
+Sending: AT+QHTTPURL=34,80
+Received: 
+
+CONNECT
+https://industrial.api.ubidots.com
+Sending: 
+Received: 
+
+OK
+Sending: AT+QHTTPPOST=322,80,80
+Received: 
+
+CONNECT
+POST /api/v1.6/devices/telelogger2 HTTP/1.1
+Host: industrial.api.ubidots.com:443
+Accept: */*
+Content-Length: 42
+Content-Type: application/json
+User-Agent: Telelogger/1.0
+Cache-Control: no-cache
+Connection: keep-alive
+X-Auth-Token: XXXXXXXXXXXXXXXXXXXXXXXX
+
+{"temperature": 23.00,"battery": 4.12}
+
+
+
+Sending: 
+Received: 
+
+OK
+Sending: AT
+Received: 
+
++QHTTPPOST: 0,200
+
+OK
+Sending: AT+QHTTPREAD=60
+Received: 
+
+CONNECT
+HTTP/1.1 200 OK
+date: Wed, 06 Dec 2023 16:00:21 GMT
+content-type: application/json
+transfer-encoding: chunked
+server: IoTServer
+access-control-allow-origin: *
+x-xss-protection: 1; mode=block
+x-content-type-options: nosniff
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+content-security-policy: default-src https: wss: data: blob: 'unsafe-eval' 'unsafe-inline'
+referrer-policy: strict-origin
+permissions-policy: geolocation 'self'; microphone 'none'
+x-frame-options: SAMEORIGIN
+
+{"battery":[{"status_code":201}],"temperature":[{"status_code":201}]}
+OK
+
++QHTTPREAD: 0
+Sending: AT+QIDEACT=1
+Received: 
+
+OK
+Finished data transmission
+*****************************************************************************
