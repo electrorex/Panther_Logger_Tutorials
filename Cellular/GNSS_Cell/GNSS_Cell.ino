@@ -1,9 +1,16 @@
+/*
+This example code will read information from the Quectel BG96 modem on the 
+Electrorex Panther Logger, including geolocation information.
+*/
+
 #include "Adafruit_MCP23X17.h"
 
 Adafruit_MCP23X17 mcp;
 
+//The Panther Logger communicates with the cell modem on Serial 1
 #define SerialAT Serial1 
 
+//Variables needed to hold information from the modem
 char result_char[2000];
 int RSI;
 int RegStatus;
@@ -61,6 +68,7 @@ int Sat;
 
 float COG;
 
+//Function to send commands to the modem and wait to recieve expected responses
 int Check;
 String sendAT(const char *toSend, const char *toCheck1, const char *toCheck2, unsigned long milliseconds) {
   String result;
@@ -162,21 +170,22 @@ void SetupCell(){
  sendAT("AT&W", "\r\nOK", "\r\nERROR", 10000); 
  
  delay(1000);
- Check=0;
  sendAT("AT+QCFG=\"nwscanseq\"", "\r\nOK", "\r\nERROR", 10000);
   
-
  delay(1000);
  sendAT("AT+COPS=0", "\r\nOK", "\r\nERROR", 10000);
 
  delay(1000);
+ //This command will force the modem to search for available cell providers in the area
+ //This could take several minutes.
  sendAT("AT+COPS=?", "\r\nOK", "\r\nERROR", 60000*5);
 
  delay(1000);
+ //This command sets the modem to automatically join the network.
  sendAT("AT+COPS=0","\r\nOK", "\r\nERROR", 60000);
 
  //Uncomment this particular sendAT command to block a certain carrier (i.e. add it to the FPLMN list). 
- //For example, some carriers may not provide adequate support for NB-IoT/CatM1 modems
+ //For example, some carriers may not provide adequate support for NB-IoT/CatM1 modems (like T-Mobile)
  //Need to run pass through script first and run AT+COPS=? to find carrier MCC and MNC
  //Follow AT command notes for BG96 to translate to proper PLMN for that carrier and insert into X's below 
  //See further notes at electrorex.io learing center
@@ -201,7 +210,7 @@ void SetupCell(){
  delay(1000);
  SerialAT.println("");
  SerialAT.println("");
- Check = 0;
+ //Get the time. If the time is correct then the modem has successfully joined the network
  sendAT("AT+CCLK?", "\r\nOK", "\r\nERROR", 60000);
  
 }
@@ -229,6 +238,7 @@ void getGPS() {
   delay(1000);
   SerialAT.println("");
   SerialAT.println("");
+  //GPS data will be provided in NMEA format.
   sendAT("AT+QGPSCFG=\"nmeasrc\",1", "\r\nOK", "\r\nERROR", 5000);
   delay(1000);
 
@@ -237,9 +247,12 @@ void getGPS() {
   while(GPSNowTime + GPSInterval > millis()){
     SerialAT.println("");
     SerialAT.println("");
+    //request GPS data for NMEA code GGA 
     sendAT("AT+QGPSGNMEA=\"GGA\"", "\r\nOK", "\r\n+CME ERROR", 5000);
     delay(1000);
   }
+
+  //Parse the GPS data, which is comma separated.
   const char* strtokIndx;
   strtokIndx = strtok(result_char, ":");
   Serial.print("strtokIndx = "); Serial.println(strtokIndx);
@@ -283,10 +296,6 @@ void getGPS() {
   Serial.print("GEO = "); Serial.println(GEO);
 }
 
-
-
-
-
 void setup() {
   delay(5000); //wait a bit to get serial monitor up
   Serial.begin(115200);
@@ -315,6 +324,5 @@ void setup() {
 
 void loop() {
   getGPS();
-  delay(5000);
-
+  delay(5000); //Wait 5 seconds before requesting new data
 }
