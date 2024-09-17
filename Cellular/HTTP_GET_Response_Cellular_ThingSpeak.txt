@@ -1,0 +1,123 @@
+Starting a data transmission
+Reading sensors
+Posting sensor data
+Sending: AT+CFUN=1,1
+Received: 
+
+OK
+
+RDY
+
++CFUN: 1
+
++CPIN: READY
+
++QUSIM: 1
+
++QIND: SMS DONE
+
+APP RDY
+Sending: AT+QHTTPCFG="contextid",1
+Received: 
+
+OK
+Sending: AT+QHTTPCFG="responseheader",1
+Received: 
+
+OK
+Sending: AT+QHTTPCFG="sslctxid",1
+Received: 
+
+OK
+Sending: AT+QSSLCFG="seclevel",1,0
+Received: 
+
+OK
+Sending: AT+QIACT?
+Received: 
+
+OK
+Sending: AT+QICSGP=1,1,"hologram","","",1
+Received: 
+
+OK
+Sending: AT+QIACT=1
+Received: 
+
+OK
+Sending: AT+QIACT?
+Received: 
+
++QIACT: 1,1,1,"100.71.240.205"
+
+OK
+Sending: AT+CREG?
+Received: 
+
++CREG: 0,3
+
+OK
+Sending: AT+CGREG?
+Received: 
+
++CGREG: 0,4
+
+OK
+Sending: AT+CEREG?
+Received: 
+
++CEREG: 0,5
+
+OK
+CREG = 3
+CGREG = 4
+CEREG = 5
+Sending: AT+QHTTPURL=165,80
+Received: 
+
+CONNECT
+https://api.thingspeak.com/update.json?api_key=XXXXXXXXXXXXXXXXXX&field1=8.00&field2=29.00&field3=1146.00&field4=45.00&field5=205&field6=21.00&field7=21.00&field8=4.10
+Sending: 
+Received: 
+
+OK
+Sending: AT+QHTTPGET=80
+Received: 
+
+OK
+
++QHTTPGET
+Sending: 
+Received: : 0,200
+
+Sending: AT
+Received: 
+OK
+Sending: AT+QHTTPREAD=60
+Received: 
+
+CONNECT
+HTTP/1.1 200 OK
+Date: Wed, 06 Dec 2023 15:48:36 GMT
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Status: 200 OK
+Cache-Control: max-age=0, private, must-revalidate
+Access-Control-Allow-Origin: *
+Access-Control-Max-Age: 1800
+X-Request-Id: 9ab43181-54d0-4346-a08b-6dd690b0b9ae
+Access-Control-Allow-Headers: origin, content-type, X-Requested-With
+Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS, DELETE, PATCH
+ETag: W/"8ccb03d24f1c4985ebca88b4d0cf2140"
+X-Frame-Options: SAMEORIGIN
+
+{"channel_id":2362505,"created_at":"2023-12-06T15:48:36Z","entry_id":2930,"field1":"8.00","field2":"29.00","field3":"1146.00","field4":"45.00","field5":"2"e620,e720"e:."au:llgu:llann"a"u
+OK
+
+TA 
+Sending: AT+QIDEACT=1
+Received: 
+OK
+Finished data transmission
+*****************************************************************************
