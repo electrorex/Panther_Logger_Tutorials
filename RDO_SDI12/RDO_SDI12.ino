@@ -1,4 +1,5 @@
-/*This sketch was written for the Electrorex Panther Logger Tutorial 10
+/*
+This sketch was written for the Electrorex Panther Logger Tutorial 8.
 The sketch reads the In-Situ RDO Pro sensor using SDI12 and parses
 the data into float variables.
 
