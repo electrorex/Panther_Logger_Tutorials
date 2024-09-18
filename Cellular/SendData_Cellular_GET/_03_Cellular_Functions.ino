@@ -117,7 +117,6 @@ char* QCSQ6;
 char* Network;
 int RSRP;
 int RSRQ;
-
 void GetQCSQ() { 
   delay(1000); 
   SerialAT.println("");

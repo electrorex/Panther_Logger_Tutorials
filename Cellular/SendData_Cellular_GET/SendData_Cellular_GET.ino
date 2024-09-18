@@ -1,5 +1,7 @@
-/*This script is a template for sending data to an internet data base using the Panther Logger board and
- * the Airgain Quectel BG96 modem using HTTP Post commands.
+/*
+This script is an example for sending data to an internet data base using the Panther Logger board and
+the Airgain Quectel BG96 modem using HTTP GET commands.
+This script will send data to thingspeak
  *Todd Miller December 4, 2023
 */
 #include "Adafruit_MCP23X17.h"
@@ -8,7 +10,7 @@
 Adafruit_MCP23X17 mcp;
 
 //String variables to post data that need to be changed
-char Token[] = "WQ64EH9Y16U37490";                                                                  
+char Token[] = "XXXXXXXXXXXXX"; //Token from your thingspeak account                                                                 
 char GetCommand[100]; 
 char Payload[2000]; //Make this large enough to hold expected data plus the endpoint
 char Endpoint[] = "https://api.thingspeak.com/update.json?api_key";

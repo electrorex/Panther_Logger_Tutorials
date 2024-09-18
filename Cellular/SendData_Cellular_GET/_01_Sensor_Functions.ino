@@ -22,8 +22,8 @@ void readBat() {
   Batv = readVolts(A4)/1000;                                                                        //Read battery on A4 and convert millivolts to volts
 }
 
-
 //Function to read sensors or sensor functions. Update as necessary
+//Reading actual battery voltage and random numbers for the rest
 void readSensors(){
   AirTemp = random(0,30);
   Humidity = random(0,100);
