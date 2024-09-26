@@ -42,7 +42,7 @@ void readBat() {
 
 WiFiClient client;
 char ssid[] = "Sawadii5";        //network SSID (name)
-char pass[] = "SongkhlaSidRex";    // network password 
+char pass[] = "xxxxhlxxx";    // network password 
 
 int status = WL_IDLE_STATUS; 
 
