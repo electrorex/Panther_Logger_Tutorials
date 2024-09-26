@@ -30,7 +30,7 @@ void readBat() {
 
 WiFiClient client;
 char ssid[] = "Sawadii5";                                                             //network SSID (name)
-char pass[] = "SongkhlaSidRex";                                                       // network password 
+char pass[] = "xxxxkhlaxxx";                                                       // network password 
 char server[] = "blynk.cloud";                                                  //The server of your ThingsBoard dashboard
 int status = WL_IDLE_STATUS; 
 char ThingString[500];                                                                //character array to hold the POST data
