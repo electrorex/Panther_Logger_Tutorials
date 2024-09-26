@@ -30,7 +30,7 @@ void readBat() {
 
 WiFiClient client;
 char ssid[] = "Sawadii5";                                                             //network SSID (name)
-char pass[] = "SongkhlaSidRex";                                                       // network password 
+char pass[] = "xxxgkhlaSxx";                                                       // network password 
 char server[] = "thingsboard.cloud";                                                  //The server of your ThingsBoard dashboard
 char Token[] = "B1lDxMaHjg8K0HwxYVcr";   
 
