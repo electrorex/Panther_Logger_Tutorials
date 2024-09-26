@@ -30,7 +30,7 @@ void readBat() {
 
 WiFiClient client;
 char ssid[] = "Sawadii5";                                                                             //network SSID (name)
-char pass[] = "SongkhlaSidRex";                                                                       // network password 
+char pass[] = "xxxkhxxx";                                                                       // network password 
 char ThingerToken[] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJEZXZpY2VDYWxsYmFja19UZWxlbG9nZ2VyIiwic3ZyIjoidXMtZWFzdC5hd3MudGhpbmdlci5pbyIsInVzciI6InRyZXhtaWxsZXIifQ.jpl6k4pc1yFL8YdHOFtk9FQMDIhX0eeyLLf29Kyt72A";
 char server[] = "backend.thinger.io";                                                                 //Get this from the Thinger device callback overview page
 
