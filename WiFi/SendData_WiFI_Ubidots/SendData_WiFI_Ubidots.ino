@@ -33,9 +33,9 @@ WiFiClient client;
 
 //Enter user specific information below. See comments for explanations
 char ssid[] = "Sawadii5";                                                                        //network SSID (name)
-char pass[] = "SongkhlaSidRex";                                                                        // network password 
+char pass[] = "xxxxxxxxxx";                                                                        // network password 
 char server[] = "industrial.api.ubidots.com";                                                       //Ubidots server. Always check to make sure this has not changed
-char UbiToken[] = "BBUS-ykRndbAMiq8hXLvWKMUPASIN6oRSxw";                                                            //Get a token from the device page after creating a device in your profile at Ubidots
+char UbiToken[] = "BBUS-ykRndbAMiqxxxxxxxxxxxx";                                                            //Get a token from the device page after creating a device in your profile at Ubidots
 char UbiDeviceName[] = "PantherLogger";                                                                //This is the name you give your device at Ubidots when you create a new device.
 
 int status = WL_IDLE_STATUS; 
