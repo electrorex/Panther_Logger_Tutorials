@@ -9,7 +9,7 @@
 #include <WiFi101.h>
 #include "Adafruit_MCP23X17.h"
 #include "driver/include/m2m_periph.h"
-#include <Adafruit_SleepyDog.h>
+
 
 Adafruit_MCP23X17 mcp;
 
@@ -44,14 +44,14 @@ void readBat() {
 
 WiFiClient client;
 char ssid[] = "Sawadii5";        //network SSID (name)
-char pass[] = "xxxxlassss";    // network password 
+char pass[] = "SongkhlaSidRex";    // network password 
 
 int status = WL_IDLE_STATUS; 
 
 //Create C-Stings (character arrays) to hold necessary items for communication
 char server[] = "api.thingspeak.com";             //server address we will connect to at ThingSpeak
 char ThingString[500];                            //character array to hold the url and data... this is the GET url
-char ThingAPIKey[] = "WQ64EH9Y16U37490";          //String to hold the api key we get from ThingSpeak. Change to your key, gotten from the channel settings page
+char ThingAPIKey[] = "PR8WKTRMEMN4EVGG";          //String to hold the api key we get from ThingSpeak. Change to your key, gotten from the channel settings page
 
 //Make a function to put the data into a character array containing the GET url
 //The GET url contains the address to send the data, the key and the data that goes into each field in the channel
@@ -112,14 +112,6 @@ void ThingSpeak() {
     Serial.println("");
     client.flush(); //this seems to be necessary to prevent buffer issue (https://github.com/arduino-libraries/WiFi101/issues/118)
     client.stop(); //End the transmission
-}
-
-//Function to sleep
-int SleepIntervals = 10;
-void Sleep(){
-  for (int i = 0; i < SleepIntervals; ++i) {
-      Watchdog.sleep(6000);
-  } 
 }
 
 void setup() {
@@ -205,13 +197,12 @@ void loop() {
 
   Serial.println(F(""));
   Serial.println(F("Finished sending sensor data to ThingSpeak with the WiFi modem"));
-  Serial.println(F("Waiting 20 seconds to repeat"));
+  Serial.println(F("Waiting 60 seconds to repeat"));
   Serial.println(F(""));
   
   //End WiFi connections and disable the modem to save power.
   WiFi.end();
   mcp.digitalWrite(15,LOW); 
   m2m_periph_gpio_set_dir(M2M_PERIPH_GPIO6,0);
-  //delay(60000); 
-  Sleep();
+  delay(60000); //We will wait one minute before sending data again
 }
