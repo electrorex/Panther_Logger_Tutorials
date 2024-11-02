@@ -2,7 +2,7 @@
  * This script goes with the Electrorex tutorial:
  * "Using the Panther Logger (Episode 3): Sending data with WiFi" 
  * 
- * This is a modification of the original script to disable WiFi modem and sleep processor
+ * 
  */
 
 #include <SPI.h>
