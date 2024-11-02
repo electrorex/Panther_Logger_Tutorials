@@ -3,6 +3,7 @@
  * "Using the Panther Logger (Episode 3): Sending data with WiFi" 
  * The script uses the HTTP POST method to send data to the Ubidots HTTP API
  */
+
 //Use as few libraries as possible
 #include <SPI.h>
 #include <WiFi101.h>
@@ -32,10 +33,10 @@ WiFiClient client;
 
 //Enter user specific information below. See comments for explanations
 char ssid[] = "Sawadii5";                                                                        //network SSID (name)
-char pass[] = "xxxkhlaxxx";                                                                        // network password 
+char pass[] = "SongkhlaSidRex";                                                                        // network password 
 char server[] = "industrial.api.ubidots.com";                                                       //Ubidots server. Always check to make sure this has not changed
-char UbiToken[] = "BBUS-ykRndbAMiq8hXLvWKMUPASIN6oRSxw";                                                                  //Get a token from the device page after creating a device in your profile at Ubidots
-char UbiDeviceName[] = "Panther Logger2";                                                                //This is the name you give your device at Ubidots when you create a new device.
+char UbiToken[] = "BBUS-ykRndbAMiq8hXLvWKMUPASIN6oRSxw";                                                            //Get a token from the device page after creating a device in your profile at Ubidots
+char UbiDeviceName[] = "PantherLogger";                                                                //This is the name you give your device at Ubidots when you create a new device.
 
 int status = WL_IDLE_STATUS; 
 char UbiString[500];                                                                                //character array to hold the POST data
@@ -142,8 +143,7 @@ void loop() {
   Ubidots();                                                                                          //Send the data with our Ubidots function
   Serial.println(F(""));
   Serial.println(F("Finished sending sensor data to Ubidots with the WiFi modem"));
-  Serial.println(F("Waiting 20 seconds to repeat"));
+  Serial.println(F("Waiting 60 seconds to repeat"));
   Serial.println(F(""));                                                                         
-  delay(20000);                                                                                       //Data is sent and now lets give a delay before next measurements and data send transmission
-                                                                                                      //In subsequent tutorial we will show how to time the loop so it runs at predtermined rates.
+  delay(60000);                                                                                       //Data is sent and now lets give a delay before next measurements and data send transmission                                                                                                      //In subsequent tutorial we will show how to time the loop so it runs at predtermined rates.
 }
