@@ -10,7 +10,7 @@ This script will send data to thingspeak
 Adafruit_MCP23X17 mcp;
 
 /***********String variables to send data that need to be changed***********/
-char Token[] = "PR8WKTRMEMN4EVGG"; //Token from your thingspeak account 
+char Token[] = "PXXWKXXXTMXXX"; //Token from your thingspeak account 
 char Payload[2000]; //Make this large enough to hold expected data plus the endpoint
 char APN[] = "hologram"; //Change to the correct APN of your service provider. Soracom's APN is "soracom.io" while hologram's is "hologram"                                                                
 /****************************************************************************/
