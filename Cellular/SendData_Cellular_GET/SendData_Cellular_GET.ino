@@ -9,10 +9,13 @@ This script will send data to thingspeak
 
 Adafruit_MCP23X17 mcp;
 
-//String variables to post data that need to be changed
-char Token[] = "XXXXXXXXXXXXX"; //Token from your thingspeak account                                                                 
-char GetCommand[100]; 
+/***********String variables to send data that need to be changed***********/
+char Token[] = "PR8WKTRMEMN4EVGG"; //Token from your thingspeak account 
 char Payload[2000]; //Make this large enough to hold expected data plus the endpoint
+char APN[] = "hologram"; //Change to the correct APN of your service provider. Soracom's APN is "soracom.io" while hologram's is "hologram"                                                                
+/****************************************************************************/
+
+char GetCommand[100]; 
 char Endpoint[] = "https://api.thingspeak.com/update.json?api_key";
 char SendCommand[100];
 
@@ -56,7 +59,7 @@ void loop() {
   mcp.digitalWrite(10,HIGH); //Turn on LED4
   GetData();
   mcp.digitalWrite(10,LOW); //Turn off LED4
-  mcp.digitalWrite(8,LOW); //TUrn off LED2
+  mcp.digitalWrite(8,LOW); //Turn off LED2
   Serial.println("Finished data transmission");
   Serial.println("*****************************************************************************");
   delay(5000);
