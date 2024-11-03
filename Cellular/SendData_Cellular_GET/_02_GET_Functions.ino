@@ -29,37 +29,33 @@ void getCommand(){
 //creates the command to set size of the payload,
 //Setup the modem to send the data via an HTTP GET command
 void GetData(){
+  sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 3000); //Do a reset to full functionality here. Can really help clear error from previous attempts
   MakePayload();
   getCommand();
-  sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 10000);
-  delay(5000);
-  sendAT("AT+QHTTPCFG=\"contextid\",1", "\r\nOK", "\r\nERROR", 5000); 
+  //Configure parameters for HTTPS
+  sendAT("AT+QHTTPCFG=\"contextid\",1", "\r\nOK", "\r\nERROR", 5000); //Set PDP (packet data protocol) context ID
   delay(1000);
-  sendAT("AT+QHTTPCFG=\"responseheader\",1", "\r\nOK", "\r\nERROR", 5000);
+  sendAT("AT+QHTTPCFG=\"responseheader\",1", "\r\nOK", "\r\nERROR", 5000); //We are requesting a response from the remote server
   delay(1000);
-  sendAT("AT+QHTTPCFG=\"sslctxid\",1", "\r\nOK", "\r\nERROR", 5000); 
+  sendAT("AT+QHTTPCFG=\"sslctxid\",1", "\r\nOK", "\r\nERROR", 5000); //Use SSL connection
   delay(1000);
-  sendAT("AT+QSSLCFG=\"seclevel\",1,0", "\r\nOK", "\r\nERROR", 5000);
+  sendAT("AT+QSSLCFG=\"seclevel\",1,0", "\r\nOK", "\r\nERROR", 5000); //We do not need SSL certificate
   delay(1000);
   sendAT("AT+QIACT?", "\r\nOK", "\r\nERROR", 6000); //Setup GPRS communication
   delay(1000);
-  sendAT("AT+QICSGP=1,1,\"soracom.io\",\"\",\"\",1", "\r\nOK", "\r\nERROR", 5000); 
-  delay(1000);
-  sendAT("AT+QIACT=1", "\r\nOK", "\r\nERROR", 10000);
+  sendAT("AT+QIACT=1", "\r\nOK", "\r\nERROR", 10000); //Activate the PDP context 1
   delay(1000);
   sendAT("AT+QIACT?", "\r\nOK", "\r\nERROR", 30000); //Setup GPRS communication
   delay(1000);
-
-  WaitReg();
-  
   sendAT(SendCommand, "\r\nCONNECT", "\r\nERROR", 8000); //Tell modem size of the payload
   delay(2000);
-  sendAT(Payload,"\r\nOK","\r\nERROR", 30000); //Send the payload
+  sendAT(Payload,"\r\nOK","\r\nERROR", 30000); //Send the payload to the modem
   delay(1000);
-  sendAT("AT+QHTTPGET=80", "\r\n+QHTTPGET", "\r\nERROR", 30000);
+  sendAT("AT+QHTTPGET=80", "\r\n+QHTTPGET", "\r\nERROR", 60000); //Send the payload to ThingSpeak
   delay(1000);
-  sendAT("AT+QHTTPREAD=80", "+QHTTPREAD: 0", "\r\nERROR", 10000);
+  sendAT("AT+QHTTPREAD=80", "+QHTTPREAD: 0", "\r\nERROR", 10000); //Read remote server response from ThingSpeak
   delay(1000);
-  sendAT("AT+QIDEACT=1", "\r\nOK", "\r\nERROR", 2000);
+  sendAT("AT+QIDEACT=1", "\r\nOK", "\r\nERROR", 2000); //Deactivate the PDP context
   delay(1000);
+  sendAT("AT+CFUN=0", "\r\nAPP RDY", "\r\nERROR", 3000);
 }
