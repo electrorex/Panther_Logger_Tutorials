@@ -55,110 +55,65 @@ void ModemWakeup(){
 }
 
 
-int CEREG; 
-int CGREG; 
-int CREG;
+//In the functions below we parse the comma separated strings given by the modem
+//We store them all in individual strings, although we don't have to store them all
 
-char* CREG1;
-char* CREG2;
-char* CREG3;
+//Registration status is given as an integer.
+int CEREG; //EPS, 3G and LTE registration
+int CGREG; //GPRS, mainly 2G registration
+int CREG; //CSD, mainly for 2G and 3G registration
 
+//Get CSD registration status
+//The modem returns the following... +CREG: 2,5,"4301","4A00F09",8
+// 2 = means automatic registration enabled
+// 5 = registered and roaming. Hologram and soracom will always be roaming.
+// "4301" = location area code in hexadecimal format
+// "4A00F09" = Four-byte GERAN/E-UTRAN cell ID in hexadecimal format
+//Below we use the strtok function to split the modem response by colon and commas into tokens (string chunks)
 void GetCREG() { 
-  SerialAT.println("");
-  delay(100);
-  SerialAT.println("");
-  delay(100);
   sendAT("AT+CREG?", "\r\nOK", "\r\nERROR", 60000);
   delay(1000);
-  CREG1=strtok(result_char,":,");
-  CREG2=strtok(NULL,",");
-  CREG3=strtok(NULL,",");
-  CREG = atoi(CREG3);
+  strtok(result_char,":,"); //split response by colon and comma
+  strtok(NULL,","); //Move to next chunk, we won't save the first one
+  CREG = atoi(strtok(NULL,",")); //This is the registration status so we put it into the CREG char
 }
 
-char* CGREG1;
-char* CGREG2;
-char* CGREG3;
+//Get GPRS registration status
 void GetCGREG() { 
-  SerialAT.println("");
-  delay(100);
-  SerialAT.println("");
-  delay(100);
   sendAT("AT+CGREG?", "\r\nOK", "\r\nERROR", 60000);
   delay(1000);
-  CGREG1=strtok(result_char,":,");
-  CGREG2=strtok(NULL,",");
-  CGREG3=strtok(NULL,",");
-  CGREG = atoi(CGREG3);
+  strtok(result_char,":,");
+  strtok(NULL,",");
+  CGREG = atoi(strtok(NULL,","));
 }
 
-char* CEREG1;
-char* CEREG2;
-char* CEREG3;
+//Get EPS (LTE) registration status
 void GetCEREG() { 
-SerialAT.println("");
-  delay(100);
-  SerialAT.println("");
-  delay(100);
   sendAT("AT+CEREG?", "\r\nOK", "\r\nERROR", 60000);
   delay(1000);
-  CEREG1=strtok(result_char,":,");
-  CEREG2=strtok(NULL,",");
-  CEREG3=strtok(NULL,",");
-  CEREG = atoi(CEREG3);
+  strtok(result_char,":,");
+  strtok(NULL,",");
+  CEREG = atoi(strtok(NULL,","));
 }
 
-char* QCSQ1;
-char* QCSQ2;
-char* QCSQ3;
-char* QCSQ4;
-char* QCSQ5;
-char* QCSQ6;
+//Get cellular LTE signal strength and quality
 char* Network;
 int RSRP;
 int RSRQ;
 void GetQCSQ() { 
-  delay(1000); 
-  SerialAT.println("");
-  SerialAT.println("");
-  SerialAT.println("");
   sendAT("AT+QCSQ", "\r\nOK", "\r\nERROR", 60000);
   delay(1000);
-  QCSQ1=strtok(result_char,":");
-  QCSQ2=strtok(NULL,",");
-  QCSQ3=strtok(NULL,",");
-  QCSQ4=strtok(NULL,",");
-  QCSQ5=strtok(NULL,",");
-  QCSQ6=strtok(NULL,",");
-  Network = QCSQ2;
-  RSRP = atoi(QCSQ4);
-  RSRQ = atoi(QCSQ6);
-  Serial.print("RSRP = "); Serial.print(RSRP); Serial.print(", ");
-    if (RSRP > -90){
-      Serial.println("Excellent");
-    } 
-    else if (RSRP < -90 & RSRP > -105){
-      Serial.println("Good");
-    }
-    else if (RSRP < -106 & RSRP > -120){
-      Serial.println("Fair");
-    }
-    else if (RSRP < -120){
-      Serial.println("Poor");
-    }
-    
-  Serial.print("RSRQ = "); Serial.print(RSRQ); Serial.print(", ");
-    if (RSRQ > -9){
-      Serial.println("Excellent");
-    } 
-    else if (RSRQ < -9 & RSRQ > -12){
-      Serial.println("Good");
-    }
-    else if (RSRQ < -13){
-      Serial.println("Fair");
-    }
+  strtok(result_char,":");
+  Network=strtok(NULL,",");
+  strtok(NULL,",");
+  RSRP = atoi(strtok(NULL,","));
+  strtok(NULL,",");
+  RSRQ = atoi(strtok(NULL,","));
 }
 
+//Function to wait for the modem to get registered
+//This will run at the beginning of a deployment
+//We will give it 20 minutes to get registered
 void WaitReg(){
   unsigned long RegMillis = millis();
   unsigned long RegInterval = 1000*60*20;
@@ -172,12 +127,14 @@ void WaitReg(){
     Serial.print("CREG = "); Serial.println(CREG);
     Serial.print("CGREG = "); Serial.println(CGREG);
     Serial.print("CEREG = "); Serial.println(CEREG);
+    //If we get registered then exit the while loop
     if(CREG==5 || CREG==1 || CGREG==5 || CGREG==1 || CEREG==5 || CEREG==1){
       RegInterval = 0;
     }
   }
 }
 
+//Major function to setup the modem for deployment. Runs in the setup function
 void SetupCell(){ 
  ModemWakeup();
  ModemReset();
@@ -187,33 +144,31 @@ void SetupCell(){
  delay(1000);
  sendAT("AT", "\r\nOK", "\r\nERROR", 1000);
  delay(1000);
- sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 10000);
+ sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 20000);
  delay(1000);
- sendAT("ATZ0", "\r\nOK", "\r\nERROR", 5000);  
- delay(1000);
- sendAT("ATE0", "\r\nOK", "\r\nERROR", 1000); 
- delay(1000);
- sendAT("AT+CMEE=0", "\r\nOK", "\r\nERROR", 1000); 
- delay(1000);
- sendAT("AT+IFC=2,2", "\r\nOK", "\r\nERROR", 1000);   
- delay(1000);
- sendAT("AT&W", "\r\nOK", "\r\nERROR", 1000); 
+ sendAT("ATE", "\r\nOK", "\r\nERROR", 1000); 
  delay(1000);
  sendAT("AT+QCFG=\"nwscanseq\"", "\r\nOK", "\r\nERROR", 1000);
  delay(1000);
- sendAT("AT+COPS=0", "\r\nOK", "\r\nERROR", 5000);
+ sendAT("AT+CREG?;+CGREG?;+CEREG?", "\r\nOK", "\r\nERROR", 1000);
  delay(1000);
- sendAT("AT+CRSM=214,28539,0,0,12,\"130062FFFFFFFFFFFFFFFFFF\"","\r\nOK", "\r\nERROR", 60000);
+ sendAT("AT+CREG=2;+CGREG=2;+CEREG=2", "\r\nOK", "\r\nERROR", 1000); //Set to enable network registration and location information
+ delay(1000); 
+ sendAT("AT+COPS=?", "\r\nOK", "\r\nERROR", 1200000); //Search for cell networks in the area
  delay(1000);
- sendAT("AT+CTZU=3", "\r\nOK", "\r\nERROR", 1000);
+ sendAT("AT+COPS=0", "\r\nOK", "\r\nERROR", 5000); //Automatically select any available network
  delay(1000);
- sendAT("AT+CTZU?", "\r\nOK", "\r\nERROR", 1000);
+ //Uncomment the below AT command to block T-Mobile. 
+ //sendAT("AT+CRSM=214,28539,0,0,12,\"130062FFFFFFFFFFFFFFFFFF\"","\r\nOK", "\r\nERROR", 60000);
  delay(1000);
- sendAT("AT+QICSGP=1,1,\"soracom.io\",\"\",\"\",1", "\r\nOK", "\r\nERROR", 5000); 
+ sendAT("AT+CTZU=3", "\r\nOK", "\r\nERROR", 1000); //Set timezone
  delay(1000);
- WaitReg();
+ char APNAT[200];
+ sprintf(APNAT,"AT+QICSGP=1,1,\"%s\",\"\",\"\",1",APN);
+ sendAT(APNAT, "\r\nOK", "\r\nERROR", 5000); //Set the APN of our provider
  delay(1000);
- sendAT("AT+CREG=2;+CGREG=2;+CEREG=2", "\r\nOK", "\r\nERROR", 1000); 
+ WaitReg(); //Wait for the modem to register onto the network
+
  delay(1000);
- sendAT("AT+CCLK?", "\r\nOK", "\r\nERROR", 2000);
+ sendAT("AT+CCLK?", "\r\nOK", "\r\nERROR", 2000); //Request the time
 }
