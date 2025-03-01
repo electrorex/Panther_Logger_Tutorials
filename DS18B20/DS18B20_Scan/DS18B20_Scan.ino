@@ -1,54 +1,17 @@
- /* This is a modification of the original DS18x20 example script in the OneWire library to make
- *  it work with the Panther Logger. This script will scan for DS18B20 devices on the digital port
- *  indicated and read temeprature data from those devices and then print results to the serial
- *  monitor.
- *  
- *  The DS18B20 device should be connected to the Panther Logger on screw terminal CN4.
- *  With the flat side of the sensor pointing up and sensor held down, the order of pin outs is:
- *  Power, Signal, Gound. This matches the order of the pins needed for the device on the CN4 screw 
- *  terminal, which is 3VS, D6, GND.
- *  
- *  The sensor then should be wired in the following way:
- *  Signal -> D6
- *  VCC -> 3VS
- *  GND -> GND
- *  
- *  Add a 4.7K resistor from 3VS to D6
- *  
-*/
-
 #include <OneWire.h>
+#include <Panther.h>
+Panther ptr;
+OneWire  ds(6);  // on pin 10 (a 4.7K resistor is necessary)
 
-//We need to add this adafruit library to use the MCP GPIO expander which will turn on the 3VS power rail
-#include "Adafruit_MCP23X17.h" 
-
-//Instatiate the mcp object
-Adafruit_MCP23X17 mcp;
-
-OneWire  ds(6);  // DS18B20 sensor is installed on D6 with a 4.7K pullup resistor.
-
-void setup(void) {
-  delay(5000); //Give us some time to get the serial monitor up.
-  Serial.begin(9600);
-  Serial.println("setting up");
-  Wire.begin();
-  Serial.println("Test1");
-  //Begin communications with the MCP over I2C
-  mcp.begin_I2C();
-  Serial.println("Test2");
-  //Turn on the 3VS rail by setting pin 4 on the MCP high
-  mcp.pinMode(4,OUTPUT);
-  mcp.digitalWrite(4,HIGH);
-
-  //Turn off the 12VS rail by setting pin 7 on the MCP low
-  mcp.pinMode(7,OUTPUT);
-  mcp.digitalWrite(7,LOW);
-   Serial.println("Finshed setting up");
+void setup() {
+  delay(5000);
+  ptr.begin();
+  Serial.println("Setting up");
+  Serial.begin(115700); 
+  ptr.set3v3(HIGH);
 }
 
-void loop(void) {
-    mcp.digitalWrite(4,HIGH);
-  //We do not need to change any of the code in the loop from the original OneWire example.
+void loop() {
   byte i;
   byte present = 0;
   byte type_s;
@@ -144,6 +107,5 @@ void loop(void) {
   Serial.print(" Celsius, ");
   Serial.print(fahrenheit);
   Serial.println(" Fahrenheit");
-    mcp.digitalWrite(4,LOW);
-    delay(3000);
+  delay(1000);
 }
