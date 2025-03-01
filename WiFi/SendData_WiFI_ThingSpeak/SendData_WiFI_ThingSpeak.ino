@@ -1,18 +1,14 @@
-/*This script will send data to ThingSpeak using the Panther Logger's WiFi modem
+/*This script will send data to THingSpeak using the Panther Logger's WiFi modem
  * This script goes with the Electrorex tutorial:
  * "Using the Panther Logger (Episode 3): Sending data with WiFi" 
- * 
- * 
  */
 
 #include <SPI.h>
 #include <WiFi101.h>
-#include "Adafruit_MCP23X17.h"
 #include "driver/include/m2m_periph.h"
+#include <Panther.h>
 
-
-Adafruit_MCP23X17 mcp;
-
+Panther ptr;
 
 //Create objects to hold mock sensor data. 
 //Most sensor data will likely be a floating point decimal
@@ -26,21 +22,6 @@ float DewPoint;
 float WindChill;
 float mvolts; 
 float Batv;
-
-//Function to read voltage on some analog pin and output in millivolts
-float readVolts(int pin) {
-  analogReadResolution(12); //Set to highest resolution
-  mvolts = analogRead(pin);
-  mvolts *= 2;
-  mvolts *= (3.3 / 4096);
-  mvolts *= 1000;
-  return mvolts;
-}
-
-//Function to read Battery voltage on pin A4 on Panther Logger
-void readBat() {
-  Batv = readVolts(A4)/1000; //Read battery on A4 and convert millivolts to volts
-}
 
 WiFiClient client;
 char ssid[] = "Sawadii5";        //network SSID (name)
@@ -61,7 +42,6 @@ void ThingSpeak() {
     Serial.println("WiFi shield not present");
   }
 
-  
   // attempt to connect to WiFi network:
   while (status != WL_CONNECTED) {
     Serial.print("Attempting to connect to WPA SSID: ");
@@ -90,7 +70,6 @@ void ThingSpeak() {
 
   //Make a connection to api.thingspeak.com with the connect function
   if (client.connect(server, 80)) {
-
     Serial.print("connected to ");
     Serial.println(client.remoteIP());
     Serial.println("");
@@ -114,40 +93,29 @@ void ThingSpeak() {
     client.stop(); //End the transmission
 }
 
+void wincOn(){
+  ptr.set3v3(LOW);
+  ptr.mcpMode(15, OUTPUT);
+  ptr.mcpWrite(15, LOW);
+  delay(100);
+  ptr.set3v3(HIGH);
+  delay(100);
+  ptr.mcpWrite(15, HIGH);
+}
+
 void setup() {
   delay(5000);
   Serial.begin(115700);
   
   // Print a welcome message
-  Serial.println("Panther Logger send data with WiFi to ThingSpeak.");
+  Serial.println("Send data with WiFi to ThingSpeak using the Panther Logger.");
   Serial.println();
+  ptr.begin();
 
-  //Do the setup functions necessary to power on the WiFi modem
-  Wire.begin();
-  mcp.begin_I2C();
+  wincOn();
 
-  //Turn off 3.3V rail
-  mcp.pinMode(4,OUTPUT);
-  mcp.digitalWrite(4,LOW); 
-  delay(100);
-
-  //Set enable WiFi pin low
-  mcp.pinMode(15, OUTPUT);
-  mcp.digitalWrite(15,LOW); 
-  delay(100);
-
-  //Turn on 3.3V switched rail and thus, the WiFi modem (ensure dip switch is on)
-  mcp.pinMode(4,OUTPUT);
-  mcp.digitalWrite(4,HIGH);
-  delay(1000);
-
-  //Set enable WiFi pin high to enable the module
-  mcp.pinMode(15, OUTPUT);
-  mcp.digitalWrite(15,HIGH); 
-  delay(1000);
-
-    //Tell WiFi101 library the WiFi pins needed for communications on the Panther Logger
-  WiFi.setPins(9,7,3,-1);
+    //Tell WiFi101 library the WiFi pins needed for communications on the Telelogger
+  WiFi.setPins(9,7,ATN,-1);
   //CS, IRQ, RST, Enable
   
   // check for the presence of the shield:
@@ -157,8 +125,6 @@ void setup() {
     while (true);
   }
 
-  
-  
   m2m_periph_gpio_set_dir(M2M_PERIPH_GPIO6,1); //This sets GPIO pin 6 on WiFi module to output, which is tied to green LED for WiFi Power
   delay(100);
   m2m_periph_gpio_set_val(M2M_PERIPH_GPIO6,0); //This sets GPIO pin 6 to ground and the LED glows
@@ -168,23 +134,14 @@ void setup() {
 
 void loop() {
   Serial.begin(115700);
-  //Enable the modem after it was disabled at end of loop
-  mcp.digitalWrite(15,HIGH); 
   delay(1000);
 
-  //Force WiFi begin
-  //Note, eventhough this is called in ThingSpeak function while WL_CONNECTED (below) this still is necessary in my tests
-  WiFi.begin(ssid, pass);
-  delay(5000); //Wait for connect, might need to be adjusted
-  
   Serial.println(F("Reading sensor data"));
-  //Make up some data and fill it into the reserved variables
-  //In subsequent tutorials we will read actual sensor data and send it
-  //For now, we will just send fake data, except for battery voltage. We will measure that here first with readBat function
-  readBat();
+  //Make up some data and/or read onboard sensor, fill it into the reserved variables
+  ptr.bat();
   Serial.print(F("Battery Voltage = ")); Serial.println(Batv);
-  AirTemp = 30;
-  Humidity = random(0,100);
+  AirTemp = ptr.pTemp();
+  Humidity = ptr.pHumid();
   BaroPressure = random(900,1200);
   WindSpeed = random(0,40);
   WindDirection = random(0,360);
@@ -195,14 +152,11 @@ void loop() {
   //Send the data with our ThingSpeak function
   ThingSpeak();
 
+  //Look for returned response from Thingspeak server and look on Thingspeak dashboard for updated data
   Serial.println(F(""));
   Serial.println(F("Finished sending sensor data to ThingSpeak with the WiFi modem"));
-  Serial.println(F("Waiting 60 seconds to repeat"));
+  Serial.println(F("Waiting 20 seconds to repeat"));
   Serial.println(F(""));
-  
-  //End WiFi connections and disable the modem to save power.
-  WiFi.end();
-  mcp.digitalWrite(15,LOW); 
-  m2m_periph_gpio_set_dir(M2M_PERIPH_GPIO6,0);
-  delay(60000); //We will wait one minute before sending data again
+  delay(20000); 
 }
+
