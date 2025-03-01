@@ -24,15 +24,15 @@ float mvolts;
 float Batv;
 
 WiFiClient client;
-char ssid[] = "Sawadii5";        //network SSID (name)
-char pass[] = "SongkhlaSidRex";    // network password 
+char ssid[] = "XXXXX";        //network SSID (name)
+char pass[] = "XXXXXXXX";    // network password 
 
 int status = WL_IDLE_STATUS; 
 
 //Create C-Stings (character arrays) to hold necessary items for communication
 char server[] = "api.thingspeak.com";             //server address we will connect to at ThingSpeak
 char ThingString[500];                            //character array to hold the url and data... this is the GET url
-char ThingAPIKey[] = "PR8WKTRMEMN4EVGG";          //String to hold the api key we get from ThingSpeak. Change to your key, gotten from the channel settings page
+char ThingAPIKey[] = "XXXXXXXXXXXX";          //String to hold the api key we get from ThingSpeak. Change to your key, gotten from the channel settings page
 
 //Make a function to put the data into a character array containing the GET url
 //The GET url contains the address to send the data, the key and the data that goes into each field in the channel
