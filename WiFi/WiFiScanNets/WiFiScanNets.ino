@@ -1,18 +1,28 @@
 /*This script is a modification of the WiFiScanNets example script from the WiFi101 library
- * It has been modified to work with the ElectroRex Panther Logger. 
+ * It has been modified to work with the ElectroRex Telelogger. 
  * -Todd R. Miller, November 25, 2023
  */
 
 //libraries to include
 #include <WiFi101.h> //main library for WiFi communications
-#include "Adafruit_MCP23X17.h" //Adafruit library to control the MCP23017 GPIO expander on the Panther Logger board
 #include "driver/include/m2m_periph.h" //driver file for WINC1500 that allows to turn on LED
+#include <Panther.h>
 
-Adafruit_MCP23X17 mcp;
+Panther ptr;
 
 int rssi;
 
 WiFiClient client;
+
+void wincOn(){
+  ptr.set3v3(LOW);
+  ptr.mcpMode(15, OUTPUT);
+  ptr.mcpWrite(15, LOW);
+  delay(100);
+  ptr.set3v3(HIGH);
+  delay(100);
+  ptr.mcpWrite(15, HIGH);
+}
 
 void printWiFiMac() {
   // print your MAC address:
@@ -85,29 +95,17 @@ void printMacAddress(byte mac[]) {
 }
 
 void setup() {
+  delay(2000);
   Serial.begin(9600);
   
   // Print a welcome message
   Serial.println("WiFi101 scan networks.");
   Serial.println(); // A a line space
 
-  //The wire library allows communications with I2C devices. 
-  //The MCP GPIO expander is an I2C device and we need it to turn on the 3.3V power rail and the WiFi modem
-  Wire.begin(); 
-  mcp.begin_I2C();
-  mcp.pinMode(4,OUTPUT);
-  mcp.digitalWrite(4,LOW); 
-  delay(100);
-  mcp.pinMode(15, OUTPUT);
-  mcp.digitalWrite(15,LOW); 
-  delay(100);
-  mcp.pinMode(4,OUTPUT);
-  mcp.digitalWrite(4,HIGH);
-  delay(100);
-  mcp.pinMode(15, OUTPUT);
-  mcp.digitalWrite(15,HIGH); 
-  
-  WiFi.setPins(9,7,3,-1);
+  ptr.begin();
+  wincOn();
+
+  WiFi.setPins(9,7,ATN,-1);
   //CS, IRQ, RST, Enable
 
   // check for the presence of the shield:
@@ -120,7 +118,6 @@ void setup() {
 }
 
 void loop() {
-  mcp.digitalWrite(4,HIGH);
   delay(1000);
   m2m_periph_gpio_set_dir(M2M_PERIPH_GPIO6,1);
   delay(100);
@@ -130,6 +127,5 @@ void loop() {
   WiFi.lowPowerMode();
   listNetworks();
   WiFi.end();
-  mcp.digitalWrite(4,LOW);
   delay(10000);
 }
