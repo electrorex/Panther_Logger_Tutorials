@@ -8,7 +8,7 @@
 Panther ptr;
 
 //String variables to post data that need to be changed
-char Token[] = "PR8WKTRMEMN4EVGG";                                                                  
+char Token[] = "XXXXXXXXXXXXXXX";                                                                  
 char GetCommand[100]; 
 char Payload[2000]; //Make this large enough to hold expected data plus the endpoint
 char Endpoint[] = "http://api.thingspeak.com/update.json?api_key";
