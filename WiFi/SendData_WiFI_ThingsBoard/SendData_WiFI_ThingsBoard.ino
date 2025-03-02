@@ -1,6 +1,6 @@
-/*This script will send data to ThingsBoard using the Telelogger's WiFi modem
+/*This script will send data to ThingsBoard using the Panther Logger's WiFi modem
  * This script goes with the Electrorex tutorial:
- * "Using the Telelogger (Episode 3): Sending data with WiFi" 
+ * "Using the Panther Logger (Episode 3): Sending data with WiFi" 
  * The script uses the HTTP POST method to send data to the ThingsBoard API
  */
 #include <SPI.h>
