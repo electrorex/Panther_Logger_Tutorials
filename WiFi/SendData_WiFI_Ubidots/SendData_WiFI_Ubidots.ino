@@ -9,16 +9,16 @@
 #include "driver/include/m2m_periph.h"
 #include "driver/include/m2m_wifi.h"
 
-Panther ptr;                                                                              /Instantiate panther library class    
+Panther ptr;  
 
 WiFiClient client;
-int status = WL_IDLE_STATUS;                                                                                                                                        
+int status = WL_IDLE_STATUS;                                                                       //Instantiate panther library class                                                                          
 
 //Enter user specific information below. See comments for explanations
-char ssid[] = "XXXXXXXXX";                                                       //network SSID (name)
-char pass[] = "XXXXXXXXX";                                                       // network password                                                      
-char Token[] = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX";                                 //Get a token from Ubidots
-char Device[] = "pantherlogger";                                                //This is the name you give your device at Ubidots
+char ssid[] = "Sawadii5";                                                             //network SSID (name)
+char pass[] = "SongkhlaSidRex";                                                       // network password                                                      
+char Token[] = "BBUS-ykRndbAMiq8hXLvWKMUPASIN6oRSxw";                                 //Get a token from Ubidots
+char Device[] = "pantherlogger";                                                      //This is the name you give your device at Ubidots
 
 void ubidots(char * Data, char * Token, char * Device, char * ssid, char * pass){
   status = 0;
@@ -124,3 +124,4 @@ void loop() {
   //However, in testing, it is fine to send a few data points every 10 or 20 seconds.
   delay(40000);                                                                                                   //In subsequent tutorial we will show how to time the loop so it runs at predtermined rates.
 }
+
