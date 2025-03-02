@@ -6,31 +6,18 @@
 #include <SPI.h>
 #include <WiFi101.h>
 #include <driver/source/nmasic.h>
-#include "Adafruit_MCP23X17.h"
+#include <Panther.h>
 #include "driver/include/m2m_periph.h"
 
-Adafruit_MCP23X17 mcp;
+Panther ptr;
 
 float AirTemp;
 float Batv;
 float mvolts;                                                                                      
 
-float readVolts(int pin) {                                                           //Make a function to read voltage on some analog pin and output in millivolts
-  analogReadResolution(12);                                                          //Set analog read resolution to 12 (4096 steps)
-  mvolts = analogRead(pin);
-  mvolts *= 2;
-  mvolts *= (3.3 / 4096);
-  mvolts *= 1000;
-  return mvolts;
-}
-                                                                                      //Function to read Battery voltage on pin A4 on Panther Logger
-void readBat() {
-  Batv = readVolts(A4)/1000;                                                          //Read battery on A4 and convert millivolts to volts
-}
-
 WiFiClient client;
 char ssid[] = "Sawadii5";                                                                             //network SSID (name)
-char pass[] = "xxxkhxxx";                                                                       // network password 
+char pass[] = "SongkhlaSidRex";                                                                       // network password 
 char ThingerToken[] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJEZXZpY2VDYWxsYmFja19UZWxlbG9nZ2VyIiwic3ZyIjoidXMtZWFzdC5hd3MudGhpbmdlci5pbyIsInVzciI6InRyZXhtaWxsZXIifQ.jpl6k4pc1yFL8YdHOFtk9FQMDIhX0eeyLLf29Kyt72A";
 char server[] = "backend.thinger.io";                                                                 //Get this from the Thinger device callback overview page
 
@@ -41,7 +28,6 @@ void Thinger() {                                                                
   if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println("WiFi shield not present");
   }
-
   
   while (status != WL_CONNECTED) {                                                                    //Attempt to connect to WiFi network:
     Serial.print("Attempting to connect to WPA SSID: ");
@@ -66,10 +52,10 @@ void Thinger() {                                                                
     Serial.println("");
     delay(1000);                                                                                      //could make this delay longer to wait for connection
     
-    client.println("POST /v3/users/trexmiller/devices/Panther Logger/callback/data HTTP/1.1");            //This is the header information. Must be carefully coded. Practice with postman!
+    client.println("POST /v3/users/trexmiller/devices/Telelogger/callback/data HTTP/1.1");            //This is the header information. Must be carefully coded. Practice with postman!
     client.println("Content-Type: application/json");
     client.println("Host: backend.thinger.io");
-    client.println("User-Agent: Panther Logger/1.0");
+    client.println("User-Agent: panther/1.0");
     client.println("Cache-Control: no-cache");
     client.println("Accept: */*");
     client.println("Connection: keep-alive");
@@ -93,26 +79,25 @@ void Thinger() {                                                                
   }
 }
 
+void wincOn(){
+  ptr.set3v3(LOW);
+  ptr.mcpMode(15, OUTPUT);
+  ptr.mcpWrite(15, LOW);
+  delay(100);
+  ptr.set3v3(HIGH);
+  delay(100);
+  ptr.mcpWrite(15, HIGH);
+}
+
 void setup() {
   delay(5000);
   Serial.begin(115700);                                                                                          
   Serial.println("Using WiFi modem to send data to Thinger.io using HTTP POST.");       // Print a welcome message
   Serial.println();
-  Wire.begin();                                                                         //Do the setup functions necessary to power on the WiFi modem
-  mcp.begin_I2C();
-  mcp.pinMode(4,OUTPUT);                                                                //Turn off 3.3V rail
-  mcp.digitalWrite(4,LOW); 
-  delay(100);
-  mcp.pinMode(15, OUTPUT);                                                               //Set enable WiFi pin low
-  mcp.digitalWrite(15,LOW); 
-  delay(100);
-  mcp.pinMode(4,OUTPUT);                                                                 //Turn on 3.3V switched rail and thus, the WiFi modem (ensure dip switch is on)
-  mcp.digitalWrite(4,HIGH);
-  delay(100);
-  mcp.pinMode(15, OUTPUT);                                                               //Set enable WiFi pin high to enable the module
-  mcp.digitalWrite(15,HIGH); 
-  WiFi.setPins(9,7,3,-1);                                                                //Tell WiFi101 library the WiFi pins needed for communications on the Panther Logger
-                                                                                         //The pin order is CS, IRQ, RST, Enable
+  ptr.begin();
+  wincOn();
+  WiFi.setPins(9,7,ATN,-1);                                                              //Tell WiFi101 library the WiFi pins needed for communications on the Telelogger
+ 
   if (WiFi.status() == WL_NO_SHIELD) {                                                   //Check for the presence of the WiFi modem:
     Serial.println("WiFi shield not present");
     // don't continue:
@@ -126,15 +111,15 @@ void setup() {
 
 void loop() {
   Serial.println(F("Reading sensor data"));
-  readBat();
+  Batv = ptr.bat();
   Serial.print(F("Battery Voltage = ")); Serial.println(Batv);
-  AirTemp = random(0,30);                                                                        //Make up some temperature data
+  AirTemp = ptr.pTemp();                                                                        //Make up some temperature data
   Serial.println(F("Sending sensor data to ThingSpeak with the WiFi modem"));
   Thinger();                                                                              //Send the data with our Thinger function
   Serial.println(F(""));
   Serial.println(F("Finished sending sensor data to ThingsBoard with the WiFi modem"));
   Serial.println(F("Waiting 20 seconds to repeat"));
   Serial.println(F(""));                                                                         
-  delay(20000);                                                                            //Data is sent and now lets give a delay before next measurements and data send transmission
-                                                                                           //In subsequent tutorial we will show how to time the loop so it runs at predtermined rates.
+  delay(20000);  //Data is sent and now lets give a delay before next measurements and data send transmission
 }
+
