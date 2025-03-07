@@ -3,9 +3,9 @@ This example code will read information from the Quectel BG96 modem on the
 Electrorex Panther Logger, including geolocation information.
 */
 
-#include "Adafruit_MCP23X17.h"
+#include <Panther.h>
 
-Adafruit_MCP23X17 mcp;
+Panther ptr;
 
 //The Panther Logger communicates with the cell modem on Serial 1
 #define SerialAT Serial1 
@@ -144,11 +144,11 @@ void ModemWakeup(){
 //One should watch this process carefully in new remote locations to gauge whether successful communications will occur
 void SetupCell(){ 
  ModemWakeup();
- delay(1000);
+ delay(100);
  ModemReset();
- delay(1000);
+ delay(100);
  sendAT("AT", "\r\nOK", "\r\nERROR", 2000);
- delay(1000);
+ delay(100);
  sendAT("AT", "\r\nOK", "\r\nERROR", 2000);
  
  Check = 0;
@@ -157,30 +157,30 @@ void SetupCell(){
   ModemReset(); 
   }  
 
- delay(1000);
+ delay(100);
  sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 10000); //restart modem to full functionality
  
- delay(2000);
+ delay(100);
  sendAT("AT+CMEE=0", "\r\nOK", "\r\nERROR", 10000); 
 
- delay(1000);
+ delay(100);
  sendAT("AT+IFC=2,2", "\r\nOK", "\r\nERROR", 10000);  
  
- delay(2000);
+ delay(100);
  sendAT("AT&W", "\r\nOK", "\r\nERROR", 10000); 
  
- delay(1000);
+ delay(100);
  sendAT("AT+QCFG=\"nwscanseq\"", "\r\nOK", "\r\nERROR", 10000);
   
- delay(1000);
+ delay(100);
  sendAT("AT+COPS=0", "\r\nOK", "\r\nERROR", 10000);
 
- delay(1000);
+ delay(100);
  //This command will force the modem to search for available cell providers in the area
  //This could take several minutes.
  sendAT("AT+COPS=?", "\r\nOK", "\r\nERROR", 60000*5);
 
- delay(1000);
+ delay(100);
  //This command sets the modem to automatically join the network.
  sendAT("AT+COPS=0","\r\nOK", "\r\nERROR", 60000);
 
@@ -191,23 +191,23 @@ void SetupCell(){
  //See further notes at electrorex.io learing center
  //delay(1000);
  //Put T-Mobile on FPLMN list
- sendAT("AT+CRSM=214,28539,0,0,12,\"130062FFFFFFFFFFFFFFFFFF\"","\r\nOK", "\r\nERROR", 60000);
+ //sendAT("AT+CRSM=214,28539,0,0,12,\"130062FFFFFFFFFFFFFFFFFF\"","\r\nOK", "\r\nERROR", 60000);
 
- delay(2000);
+ delay(100);
  sendAT("AT+CTZU=3", "\r\nOK", "\r\nERROR", 10000);
  
- delay(2000);
+ delay(100);
  SerialAT.println("");
  SerialAT.println("");
  sendAT("AT+CTZU?", "\r\nOK", "\r\nERROR", 10000);
 
  
- delay(1000);
+ delay(100);
  SerialAT.println("");
  SerialAT.println("");
  sendAT("AT+CREG=2;+CGREG=2;+CEREG=2", "\r\nOK", "\r\nERROR", 10000); 
  
- delay(1000);
+ delay(100);
  SerialAT.println("");
  SerialAT.println("");
  //Get the time. If the time is correct then the modem has successfully joined the network
@@ -219,28 +219,28 @@ void getGPS() {
   SerialAT.println("");
   SerialAT.println("");
   sendAT("AT", "\r\nOK", "\r\nERROR", 3000);
-  delay(2000);
+  delay(100);
   SerialAT.println("");
   SerialAT.println("");
   sendAT("AT+QCFG=\"gpio\",1,64,1,0,0,1", "\r\nOK", "\r\nERROR", 3000);
-  delay(1000);
+  delay(100);
   SerialAT.println("");
   SerialAT.println("");
   sendAT("AT+QCFG=\"gpio\",3,64,1,1", "\r\nOK", "\r\nERROR", 3000);
-  delay(1000);
+  delay(100);
   SerialAT.println("");
   SerialAT.println("");
   sendAT("AT+QCFG=\"gpio\",2,64", "\r\nOK", "\r\nERROR", 3000);
-  delay(1000);
+  delay(100);
   SerialAT.println("");
   SerialAT.println("");
   sendAT("AT+QGPS=1", "\r\nOK", "\r\nERROR", 5000);
-  delay(1000);
+  delay(100);
   SerialAT.println("");
   SerialAT.println("");
   //GPS data will be provided in NMEA format.
   sendAT("AT+QGPSCFG=\"nmeasrc\",1", "\r\nOK", "\r\nERROR", 5000);
-  delay(1000);
+  delay(100);
 
   unsigned int GPSNowTime = millis();
   unsigned int GPSInterval = 5000; //Give sensor 10 seconds to send good data
@@ -249,7 +249,7 @@ void getGPS() {
     SerialAT.println("");
     //request GPS data for NMEA code GGA 
     sendAT("AT+QGPSGNMEA=\"GGA\"", "\r\nOK", "\r\n+CME ERROR", 5000);
-    delay(1000);
+    delay(100);
   }
 
   //Parse the GPS data, which is comma separated.
@@ -300,26 +300,13 @@ void setup() {
   delay(5000); //wait a bit to get serial monitor up
   Serial.begin(115200);
   SerialAT.begin(115200);
-  
   Serial.println("Setting things up. Please wait");
-  Wire.begin();
-  mcp.begin_I2C();
-  
-  mcp.pinMode(4, OUTPUT);
-  mcp.digitalWrite(4, HIGH); //Turn on 3VS rail
-  
-  mcp.pinMode(7, OUTPUT);
-  mcp.digitalWrite(7, LOW); //Turn off 12VS rail
-  
-  mcp.pinMode(8, OUTPUT);
-  mcp.digitalWrite(8, LOW); //Turn off indicator LED2
-
-  mcp.pinMode(9, OUTPUT);
-  mcp.digitalWrite(9, LOW); //Turn off indicator LED3
-
-  mcp.pinMode(10, OUTPUT);
-  mcp.digitalWrite(10, LOW); //Turn off indicator LED4
-  
+  ptr.begin();
+  ptr.set3v3(HIGH);
+  ptr.set12v(LOW);
+  ptr.LED(2,LOW);
+  ptr.LED(3,LOW);
+  ptr.LED(4,LOW);
 }
 
 void loop() {
