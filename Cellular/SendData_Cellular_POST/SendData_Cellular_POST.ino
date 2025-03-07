@@ -1,79 +1,64 @@
-/*This script is a template for sending data to an internet data base using the Panther Loggerlogger board and
+/*This script is a template for sending data to an internet data base using the Panther Logger board and
  * the Airgain Quectel BG96 modem using HTTP Post commands.
- *Todd Miller December 4, 2023
+ *Todd Miller March 6, 2023
 */
-#include "Adafruit_MCP23X17.h"
+#include <Panther.h>
 #include <OneWire.h>
 #define SerialAT Serial1
 
-Adafruit_MCP23X17 mcp;
-
-
-//We only have one DS18B20 sensor in this tutorial, but we can replicate it a few times
-#define NSENSORS 3 //Number of DS18B temperature sensors to measure
-
-//Add the temp chain node addresses in order
-byte Address[NSENSORS][8] = {
-  {0x28, 0x0B, 0xAE, 0x73, 0x0E, 0x00, 0x00, 0xA3},
-  {0x28, 0x0B, 0xAE, 0x73, 0x0E, 0x00, 0x00, 0xA3},
-  {0x28, 0x0B, 0xAE, 0x73, 0x0E, 0x00, 0x00, 0xA3}
-};
+Panther ptr;
 
 //String variables to post data that need to be changed
 char url[] = "https://industrial.api.ubidots.com";
 char Host[] = "industrial.api.ubidots.com:443";
-char Token[] = "X-Auth-Token: BBUS-GqdJRJRyZz9yrWLH94R6ePS67uqUVa";                                                                  
-char Destination[] = "/api/v1.6/devices/Panther Loggerlogger2";
+char Token[] = "X-Auth-Token: XXXXXXXXXXXXXXXXXXXXXXXXXXX";                                                                  
+char Destination[] = "/api/v1.6/devices/pantherlogger";
 char ContentLength[30]; 
-char UserAgent[] = "Panther Loggerlogger/1.0";    
+char UserAgent[] = "PantherLogger/1.0";    
 char ContentType[] = "application/json"; 
-char DataString[200];      
-char urlCommand[100]; 
-char PostCommand[100];                                        
-char Payload[2000]; //Make this large enough to hold expected post data plus ~300 to 500 for header.
+char DataString[900];      
+char urlCommand[200]; 
+char PostCommand[200];                                        
+char Payload[1000]; //Make this large enough to hold expected post data plus ~300 to 500 for header.
 
 void setup() {
   delay(5000);
-  Serial.println("Setting up");
+  Serial.println("Setting up Panther Logger to send data to Ubidots");
   Serial.begin(115700); 
   SerialAT.begin(115700);
+  ptr.begin(); 
 
   //Turn on red LED so we know board has power
-  pinMode(13, OUTPUT); 
-  digitalWrite(13,HIGH);
-  Wire.begin();
-  mcp.begin_I2C(0x20);
-  mcp.pinMode(7,OUTPUT);
-  mcp.digitalWrite(7,LOW); //Turn off 12VS rail
-  mcp.pinMode(4, OUTPUT);
-  mcp.digitalWrite(4, HIGH); //Turn on 3VS rail
+  ptr.LED(1,HIGH);
+  ptr.set12v(LOW);
+  ptr.set3v3(HIGH);
 
   //Turn off all other LEDs to start
-  mcp.pinMode(8,OUTPUT);
-  mcp.digitalWrite(8,LOW);
-  mcp.pinMode(9,OUTPUT);
-  mcp.digitalWrite(9,LOW);
-  mcp.pinMode(10,OUTPUT);
-  mcp.digitalWrite(10,LOW);
+  ptr.LED(2,LOW);
+  ptr.LED(3,LOW);
+  ptr.LED(4,LOW);
   
   SetupCell();
   Serial.println("Setup complete");
 }
 
 void loop() {
-  mcp.digitalWrite(8,HIGH); //Turn on LED2
+  ptr.LED(2,HIGH); //Turn on LED2
   Serial.println("Starting a data transmission");
   Serial.println("Reading sensors");
-  mcp.digitalWrite(9,HIGH); //Turn on LED3
-  readSensors();
+  ptr.LED(3,HIGH);
+  ptr.set12v(HIGH);
   delay(3000);
+  readSensors(); 
+  ptr.set12v(LOW);
+  delay(1000);
   Serial.println("Posting sensor data");
-  mcp.digitalWrite(9,LOW); //Turn off LED3
-  mcp.digitalWrite(10,HIGH); //Turn on LED4
+  ptr.LED(3,LOW); //Turn off LED3
+  ptr.LED(4,HIGH); //Turn on LED4
   setupPOST();
   PostData();
-  mcp.digitalWrite(10,LOW); //Turn off LED4
-  mcp.digitalWrite(8,LOW); //TUrn off LED2
+  ptr.LED(4,LOW); //Turn off LED4
+  ptr.LED(2,LOW); //TUrn off LED2
   Serial.println("Finished data transmission");
   Serial.println("*****************************************************************************");
   delay(10000);
