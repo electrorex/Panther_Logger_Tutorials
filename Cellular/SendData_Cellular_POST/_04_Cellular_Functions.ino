@@ -1,7 +1,6 @@
+//Function to communicate AT commands to the modem and wait for expected responses
 char result_char[2000]; //container to read modem responses
-
 int Check;
-
 //Function to send AT commands to modem and listen for expected response, error code, or timeout after so many seconds
 String sendAT(const char *toSend, const char *toCheck1, const char *toCheck2, unsigned long milliseconds) {
   String result;
@@ -54,15 +53,10 @@ void ModemWakeup(){
  Serial.println("Modem is awake!");
 }
 
-
 int CEREG; 
 int CGREG; 
 int CREG;
-
-char* CREG1;
-char* CREG2;
-char* CREG3;
-
+//Get GSM registration status
 void GetCREG() { 
   SerialAT.println("");
   delay(100);
@@ -70,92 +64,85 @@ void GetCREG() {
   delay(100);
   sendAT("AT+CREG?", "\r\nOK", "\r\nERROR", 60000);
   delay(1000);
-  CREG1=strtok(result_char,":,");
-  CREG2=strtok(NULL,",");
-  CREG3=strtok(NULL,",");
-  CREG = atoi(CREG3);
+  strtok(result_char,":,");
+  strtok(NULL,",");
+  CREG = atoi(strtok(NULL,","));
 }
 
-char* CGREG1;
-char* CGREG2;
-char* CGREG3;
+//Get GPRS registration status
 void GetCGREG() { 
   SerialAT.println("");
   delay(100);
   SerialAT.println("");
   delay(100);
   sendAT("AT+CGREG?", "\r\nOK", "\r\nERROR", 60000);
-  delay(1000);
-  CGREG1=strtok(result_char,":,");
-  CGREG2=strtok(NULL,",");
-  CGREG3=strtok(NULL,",");
-  CGREG = atoi(CGREG3);
+  delay(100);
+  strtok(result_char,":,");
+  strtok(NULL,",");
+  CGREG = atoi(strtok(NULL,","));
 }
 
-char* CEREG1;
-char* CEREG2;
-char* CEREG3;
+//Get registration status for LTE and NB-IoT
 void GetCEREG() { 
-SerialAT.println("");
+  SerialAT.println("");
   delay(100);
   SerialAT.println("");
   delay(100);
   sendAT("AT+CEREG?", "\r\nOK", "\r\nERROR", 60000);
-  delay(1000);
-  CEREG1=strtok(result_char,":,");
-  CEREG2=strtok(NULL,",");
-  CEREG3=strtok(NULL,",");
-  CEREG = atoi(CEREG3);
+  delay(100);
+  strtok(result_char,":,");
+  strtok(NULL,",");
+  CEREG = atoi(strtok(NULL,","));
 }
 
-char* QCSQ1;
-char* QCSQ2;
-char* QCSQ3;
-char* QCSQ4;
-char* QCSQ5;
-char* QCSQ6;
 char* Network;
 int RSRP;
 int RSRQ;
 
 void GetQCSQ() { 
-  delay(1000); 
+  delay(100); 
   SerialAT.println("");
   SerialAT.println("");
   SerialAT.println("");
   sendAT("AT+QCSQ", "\r\nOK", "\r\nERROR", 60000);
-  delay(1000);
-  QCSQ1=strtok(result_char,":");
-  QCSQ2=strtok(NULL,",");
-  QCSQ3=strtok(NULL,",");
-  QCSQ4=strtok(NULL,",");
-  QCSQ5=strtok(NULL,",");
-  QCSQ6=strtok(NULL,",");
-  Network = QCSQ2;
-  RSRP = atoi(QCSQ4);
-  RSRQ = atoi(QCSQ6);
+  delay(100);
+  strtok(result_char,":");
+  Network=strtok(NULL,",");
+  strtok(NULL,",");
+  RSRP=atoi(strtok(NULL,","));
+  strtok(NULL,",");
+  RSRQ=atoi(strtok(NULL,","));
+  int RSRP_Excellent = -90;
+  int RSRP_Good = -105;
+  int RSRP_Fair = -106;
+  int RSRP_Poor = -120;
+
+  int RSRQ_Excellent = -9;
+  int RSRQ_Good = -12;
+  int RSRQ_Fair = -13;
+
   Serial.print("RSRP = "); Serial.print(RSRP); Serial.print(", ");
-    if (RSRP > -90){
+    if (RSRP >= RSRP_Excellent){
       Serial.println("Excellent");
     } 
-    else if (RSRP < -90 & RSRP > -105){
+    else if (RSRP < RSRP_Excellent & RSRP >= RSRP_Good){
       Serial.println("Good");
     }
-    else if (RSRP < -106 & RSRP > -120){
+    else if (RSRP < RSRP_Fair & RSRP >= RSRP_Poor){
       Serial.println("Fair");
     }
-    else if (RSRP < -120){
+    else if (RSRP < RSRP_Poor){
       Serial.println("Poor");
     }
     
   Serial.print("RSRQ = "); Serial.print(RSRQ); Serial.print(", ");
-    if (RSRQ > -9){
+    if (RSRQ > RSRQ_Excellent){
       Serial.println("Excellent");
     } 
-    else if (RSRQ < -9 & RSRQ > -12){
+    else if (RSRQ < RSRQ_Excellent & RSRQ >= RSRQ_Good){
       Serial.println("Good");
     }
-    else if (RSRQ < -13){
+    else if (RSRQ < RSRQ_Fair){
       Serial.println("Fair");
     }
 }
@@ -169,7 +156,7 @@ void WaitReg(){
     GetCGREG();
     delay(100);
     GetCEREG();
-    delay(1000);
+    delay(100);
     Serial.print("CREG = "); Serial.println(CREG);
     Serial.print("CGREG = "); Serial.println(CGREG);
     Serial.print("CEREG = "); Serial.println(CEREG);
@@ -180,63 +167,67 @@ void WaitReg(){
 }
 
 void SetupCell(){ 
- ModemWakeup();
- ModemReset();
- sendAT("AT", "\r\nOK", "\r\nERROR", 1000);
- delay(1000);
- sendAT("AT", "\r\nOK", "\r\nERROR", 1000);
- delay(1000);
- sendAT("AT", "\r\nOK", "\r\nERROR", 1000);
- delay(1000);
- sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 10000);
- delay(1000);
- sendAT("ATZ0", "\r\nOK", "\r\nERROR", 5000);  
- delay(1000);
- sendAT("ATE0", "\r\nOK", "\r\nERROR", 1000); 
- delay(1000);
- sendAT("AT+CMEE=0", "\r\nOK", "\r\nERROR", 1000); 
- delay(1000);
- sendAT("AT+IFC=2,2", "\r\nOK", "\r\nERROR", 1000);   
- delay(1000);
- sendAT("AT&W", "\r\nOK", "\r\nERROR", 1000); 
- delay(1000);
- sendAT("AT+QCFG=\"nwscanseq\"", "\r\nOK", "\r\nERROR", 1000);
- delay(1000);
- sendAT("AT+COPS=0", "\r\nOK", "\r\nERROR", 5000);
- delay(1000);
- sendAT("AT+CRSM=214,28539,0,0,12,\"130062FFFFFFFFFFFFFFFFFF\"","\r\nOK", "\r\nERROR", 60000);
- delay(1000);
- sendAT("AT+CTZU=3", "\r\nOK", "\r\nERROR", 1000);
- delay(1000);
- sendAT("AT+CTZU?", "\r\nOK", "\r\nERROR", 1000);
- delay(1000);
- sendAT("AT+QICSGP=1,1,\"hologram\",\"\",\"\",1", "\r\nOK", "\r\nERROR", 5000); 
- delay(1000);
- WaitReg();
- delay(1000);
- sendAT("AT+CREG=2;+CGREG=2;+CEREG=2", "\r\nOK", "\r\nERROR", 1000); 
- delay(1000);
- sendAT("AT+CCLK?", "\r\nOK", "\r\nERROR", 2000);
- sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 10000);
-  delay(1000);
-  sendAT("AT+QHTTPCFG=\"contextid\",1", "\r\nOK", "\r\nERROR", 5000); 
-  delay(1000);
-  sendAT("AT+QHTTPCFG=\"responseheader\",1", "\r\nOK", "\r\nERROR", 5000);
-  delay(1000);
-  sendAT("AT+QHTTPCFG=\"requestheader\",1", "\r\nOK", "\r\nERROR", 5000);
-  delay(1000);
-  sendAT("AT+QHTTPCFG=\"sslctxid\",1", "\r\nOK", "\r\nERROR", 5000); 
-  delay(1000);
-  sendAT("AT+QSSLCFG=\"seclevel\",1,0", "\r\nOK", "\r\nERROR", 5000);
-  delay(1000);
-  sendAT("AT+QIACT?", "\r\nOK", "\r\nERROR", 6000); //Setup GPRS communication
-  delay(1000);
-  sendAT("AT+QICSGP=1,1,\"hologram\",\"\",\"\",1", "\r\nOK", "\r\nERROR", 5000); 
-  delay(1000);
-  sendAT("AT+QIACT=1", "\r\nOK", "\r\nERROR", 10000);
-  delay(1000);
-  sendAT("AT+QIACT?", "\r\nOK", "\r\nERROR", 30000); //Setup GPRS communication
-  delay(1000);
+  //Startup modem with a wakeup and reset (do this only once at startup)
+  ModemWakeup();
+  ModemReset();
+  sendAT("AT", "\r\nOK", "\r\nERROR", 1000);
+  delay(100);
+  sendAT("AT", "\r\nOK", "\r\nERROR", 1000);
+  delay(100);
+  sendAT("AT", "\r\nOK", "\r\nERROR", 1000);
+  delay(100);
+  sendAT("AT+CFUN=1,1", "\r\nAPP RDY", "\r\nERROR", 10000);
+  delay(100);
 
+ //Get signal strength and quality a couple of times
+  GetQCSQ();
+  delay(500);
+  GetQCSQ();
+  delay(100);
+  sendAT("ATE1", "\r\nOK", "\r\nERROR", 1000); 
+  delay(100);
+  sendAT("AT+CMEE=2", "\r\nOK", "\r\nERROR", 1000);  //Set error reporting
+  delay(100);
+  sendAT("AT+IFC=2,2", "\r\nOK", "\r\nERROR", 1000);   //set flow control
+  delay(100);
+  sendAT("AT+QCFG=\"nwscanseq\",020301", "\r\nOK", "\r\nERROR", 1000);  //Scan for CatM1 networks first
+  delay(100);
+  sendAT("AT+COPS=0", "\r\nOK", "\r\nERROR", 5000);  //Automatically register
+  delay(100);
+  sendAT("AT+COPS=?", "\r\nOK", "\r\nERROR", 120000); //Scan for networks
+  delay(100);
+ 
+ //Uncomment to prevent T-mobile connection
+ //sendAT("AT+CRSM=214,28539,0,0,12,\"130062FFFFFFFFFFFFFFFFFF\"","\r\nOK", "\r\nERROR", 60000);
+  delay(100);
+  sendAT("AT+CTZU=3", "\r\nOK", "\r\nERROR", 1000);  //Set time zone to local time
+  delay(100);
+  sendAT("AT+CTZU?", "\r\nOK", "\r\nERROR", 1000);
+  delay(100);
+  sendAT("AT+QICSGP=1,1,\"hologram\",\"\",\"\",1", "\r\nOK", "\r\nERROR", 5000); //Set the APN
+  delay(100);
+
+ //Wait for registration
   WaitReg();
+  delay(100);
+  sendAT("AT+CREG=2;+CGREG=2;+CEREG=2", "\r\nOK", "\r\nERROR", 1000); //registration status
+  delay(100);
+  sendAT("AT+CCLK?", "\r\nOK", "\r\nERROR", 2000);  //get the time
+  delay(100);
+  GetQCSQ();              //get cell signal
+  
+  //Configure HTTP service                                      
+  sendAT("AT+QHTTPCFG=\"contextid\",1", "\r\nOK", "\r\nERROR", 5000); 
+  delay(100);
+  sendAT("AT+QHTTPCFG=\"responseheader\",1", "\r\nOK", "\r\nERROR", 5000);
+  delay(100);
+  sendAT("AT+QHTTPCFG=\"requestheader\",1", "\r\nOK", "\r\nERROR", 5000);
+  delay(100);
+  sendAT("AT+QIACT?", "\r\nOK", "\r\nERROR", 6000); //Setup GPRS communication, start PDP context (Packet Data Protocol)
+  delay(100);
+  sendAT("AT+QIACT=1", "\r\nOK", "\r\nERROR", 10000);
+  delay(100);
+  sendAT("AT+QIACT?", "\r\nOK", "\r\nERROR", 30000); //If connected to network this will get our IP address
+  delay(100);
 }
+
