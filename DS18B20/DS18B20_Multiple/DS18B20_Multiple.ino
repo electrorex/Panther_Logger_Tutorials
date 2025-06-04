@@ -2,9 +2,9 @@
  *  Paul Stoffregen. It has been modified to work with the Panther Logger board and shows an example of how
  *  to read multiple DS18B20 devices.
  *  
- *  The DS18B20 device(s) should be connected to the Panther Logger on screw terminal CN4.
+ *  The DS18B20 device(s) should be connected to the Panther Logger on screw terminal block 6.
  *  With the flat side of the sensor pointing up and sensor held down, the order of pin outs is:
- *  Power, Signal, Gound. This matches the order of the pins needed for the device on the CN4 screw 
+ *  Power, Signal, Gound. This matches the order of the pins needed for the device on the block 6 screw 
  *  terminal, which is 3VS, D6, GND.
  *  
  *  The sensor then should be wired in the following way:
@@ -20,24 +20,22 @@
 */
 
 #include <OneWire.h>
+#include <Panther.h>
 
-//We need to add this adafruit library to use the MCP GPIO expander which will turn on the 3VS power rail
-#include "Adafruit_MCP23X17.h" 
-
-//Instatiate the mcp object
-Adafruit_MCP23X17 mcp;
+Panther ptr;
 
 #define NSENSORS 5 //Number of DS18B temperature sensors to measure
-float Temp[NSENSORS], TempF[NSENSORS];
+float Temp[NSENSORS];
+
 #define ONE_WIRE_BUS 6 //Temp chain on digital pin 6
 OneWire oneWire(ONE_WIRE_BUS);
 
 byte Address[NSENSORS][8] = {
-  {0x28, 0x12, 0x98, 0xAC, 0x0D, 0x00, 0x00, 0x09},
-  {0x28, 0x3E, 0xBF, 0xAC, 0x0D, 0x00, 0x00, 0x6B},
-  {0x28, 0x81, 0xB5, 0xAC, 0x0D, 0x00, 0x00, 0xF5},
-  {0x28, 0xD1, 0x79, 0xAC, 0x0D, 0x00, 0x00, 0xD8},
-  {0x28, 0x27, 0xA8, 0xAC, 0x0D, 0x00, 0x00, 0x8B}
+  {0x28, 0xC1, 0x6F, 0xAC, 0x0D, 0x00, 0x00, 0x63},
+  {0x28, 0x58, 0xBB, 0xAC, 0x0D, 0x00, 0x00, 0x05},
+  {0x28, 0x69, 0xB5, 0xAC, 0x0D, 0x00, 0x00, 0x7D},
+  {0x28, 0x8D, 0xB5, 0xAC, 0x0D, 0x00, 0x00, 0x88},
+  {0x28, 0x92, 0x9C, 0xAC, 0x0D, 0x00, 0x00, 0xFC},
 };
 
 byte present = 0;
@@ -49,7 +47,7 @@ void readTemps() {
         oneWire.reset();
         oneWire.select(Address[i]);
         oneWire.write(0x44, 1);
-        delay(1200);     // required delay
+        delay(100);     // required delay
         present = oneWire.reset();
         oneWire.select(Address[i]);
         oneWire.write(0xBE);         // Read Scratchpad
@@ -75,30 +73,22 @@ void readTemps() {
 void setup(void) {
   delay(5000); //Give us some time to get the serial monitor up.
   Serial.begin(9600);
-  Wire.begin();
+  ptr.begin();
 
-  //Begin communications with the MCP over I2C
-  mcp.begin_I2C();
-
-  //Turn on the 3VS rail by setting pin 4 on the MCP high
-  mcp.pinMode(4,OUTPUT);
-  mcp.digitalWrite(4,HIGH);
-
-  //Turn off the 12VS rail by setting pin 7 on the MCP low
-  mcp.pinMode(7,OUTPUT);
-  mcp.digitalWrite(7,LOW);
-   
+  ptr.set3v3(HIGH);
+  ptr.set12v(HIGH);
 }
 
 void loop(){
   readTemps();
-  for (int i = 0; i < NSENSORS; i++) {
-    Serial.print("Temperature Sensor ");
-    Serial.print(i);
-    Serial.print(" = ");
+  //print temperatures
+  for(int i; i<NSENSORS; i++){
+    Serial.print("Temp"); 
+    Serial.print(i); 
+    Serial.print("="); 
     Serial.print(Temp[i]);
-    Serial.println("degrees C");
+    Serial.println("deg C");
   }
-  Serial.println(""); //Add space between loops
-  delay(1000);
+  delay(5000);
 }
+
