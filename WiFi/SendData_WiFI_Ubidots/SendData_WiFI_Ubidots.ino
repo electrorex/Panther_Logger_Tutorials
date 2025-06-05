@@ -16,8 +16,8 @@ int status = WL_IDLE_STATUS;                                                    
 
 //Enter user specific information below. See comments for explanations
 char ssid[] = "Sawadii5";                                                             //network SSID (name)
-char pass[] = "SongkhlaSidRex";                                                       // network password                                                      
-char Token[] = "BBUS-ykRndbAMiq8hXLvWKMUPASIN6oRSxw";                                 //Get a token from Ubidots
+char pass[] = "XXXXXXXXXXXXXXXXXXX";                                                       // network password                                                      
+char Token[] = "XXXXXXXXXXXXXXXXXXXXX";                                              //Get a token from Ubidots
 char Device[] = "pantherlogger";                                                      //This is the name you give your device at Ubidots
 
 void ubidots(char * Data, char * Token, char * Device, char * ssid, char * pass){
